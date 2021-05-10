@@ -1,11 +1,9 @@
 package com.runner;
 
+import com.google.gson.Gson;
 import model.Log;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import service.DBService;
-import service.IDBService;
-import service.IRestLogCollector;
 import service.RestLogCollector;
 import sort.ITreeSort;
 import sort.ITreeVisitor;
@@ -18,9 +16,9 @@ import java.util.List;
 @Component
 public class Executor {
 
-    DBService dbService;// = new DBService();
+    DBService dbService;
 
-    RestLogCollector restLogCollector;// = new RestLogCollector();
+    RestLogCollector restLogCollector;
 
     public Executor(RestLogCollector restLogCollector, DBService dbService) {
         this.dbService = dbService;
@@ -40,6 +38,7 @@ public class Executor {
         System.out.println("message sort");
 
         try {
+            dbService.setConnection();
             dbService.setLog(logs);
             System.out.println("message insert");
         } catch (SQLException throwables) {

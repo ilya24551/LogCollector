@@ -1,7 +1,6 @@
 package service;
 
 import model.Log;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 

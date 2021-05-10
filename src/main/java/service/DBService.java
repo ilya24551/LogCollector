@@ -1,24 +1,31 @@
 package service;
 
 import model.Log;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.sql.*;
+import java.sql.Date;
+import java.sql.ResultSet;
+import java.sql.PreparedStatement;
+import java.sql.DriverManager;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
-import java.util.Properties;
 
 @Service
 public class DBService implements IDBService {
 
-    private final String connectionUrl = "jdbc:h2:tcp://192.168.1.64:9092/~/test";
-    private final String USER = "scott";
-    private final String PASSWORD = "tiger";
-    static final String JDBC_DRIVER = "org.h2.Driver";
+    @Value("${spring.datasource.url}")
+    private String connectionUrl;
+    @Value("${spring.datasource.username}")
+    private String USER;
+    @Value("${spring.datasource.password}")
+    private String PASSWORD;
+    static String JDBC_DRIVER = "org.h2.Driver";
     Connection connection;
-    Statement statement;
     private final String INSERT_LOG = "insert into message_log " +
             "(created_at, first_name, message, second_name, user_id)" +
-            " value (?,?,?,?,?)";
+            " values (?,?,?,?,?)";
 
     private final String SELECT_LOG = "select created_at, first_name, message, second_name, user_id" +
             " from message_log" +
@@ -27,18 +34,20 @@ public class DBService implements IDBService {
     public DBService() {
     }
 
-    @Override
-    public void setLog(List<Log> logs) throws SQLException {
+    public void setConnection() {
         try {
             Class.forName(JDBC_DRIVER);
             connection = DriverManager.getConnection(connectionUrl, USER, PASSWORD);
-            statement = connection.createStatement();
         } catch (SQLException | ClassNotFoundException throwables) {
             throwables.printStackTrace();
         }
+    }
+
+    @Override
+    public void setLog(List<Log> logs) throws SQLException {
         for (Log log : logs) {
             PreparedStatement preparedStatement = connection.prepareStatement(INSERT_LOG);
-            preparedStatement.setDate(1, log.getCreated_at());
+            preparedStatement.setDate(1, Date.valueOf(log.getCreated_at().toLocalDate()));
             preparedStatement.setString(2, log.getFirst_name());
             preparedStatement.setString(3, log.getMessage());
             preparedStatement.setString(4, log.getSecond_name());
@@ -49,13 +58,6 @@ public class DBService implements IDBService {
 
     @Override
     public ResultSet getLog(Date date) throws SQLException {
-        try {
-            Class.forName(JDBC_DRIVER);
-            connection = DriverManager.getConnection(connectionUrl, USER, PASSWORD);
-            statement = connection.createStatement();
-        } catch (SQLException | ClassNotFoundException throwables) {
-            throwables.printStackTrace();
-        }
         PreparedStatement preparedStatement = connection.prepareStatement(SELECT_LOG);
         preparedStatement.setDate(1, date);
         return preparedStatement.getResultSet();

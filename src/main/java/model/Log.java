@@ -1,20 +1,20 @@
 package model;
 
-import java.sql.Date;
+import java.time.LocalDateTime;
 
 public class Log {
     //yyyy-MM-dd'T'HH:mm:ss
-    private Date created_at;
+    private LocalDateTime created_at;
     private String first_name;
     private String message;
     private String second_name;
     private Integer user_id;
 
-    public Date getCreated_at() {
+    public LocalDateTime getCreated_at() {
         return created_at;
     }
 
-    public void setCreated_at(Date created_at) {
+    public void setCreated_at(LocalDateTime created_at) {
         this.created_at = created_at;
     }
 

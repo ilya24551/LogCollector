@@ -11,6 +11,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -26,14 +27,13 @@ public class RestLogCollector implements IRestLogCollector {
 
     public List<Log> getLog() {
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setContentType(MediaType.ALL);
-        httpHeaders.setAccept(Collections.singletonList(MediaType.ALL));
+        httpHeaders.setAccept(Collections.singletonList(MediaType.TEXT_HTML));
         HttpEntity<String> httpEntity = new HttpEntity<>(httpHeaders);
         RestTemplate restTemplate = new RestTemplate();
 
         try {
             ResponseEntity<Message> responseEntity = restTemplate.exchange(
-                    LOG_URL,
+                    new URI(LOG_URL),
                     HttpMethod.GET,
                     httpEntity,
                     Message.class);
